@@ -10,6 +10,8 @@
 
 // spi_inst_t *spi = spi0;
 
+#define INCLUDE_DEBUG 1
+
 const uint8_t read_reg_cmd = SX126X_CMD_READ_REGISTER;
 const uint8_t get_status_cmd = SX126X_CMD_GET_STATUS;
 const uint8_t nop_cmd = 0x00;
@@ -45,7 +47,7 @@ const uint8_t get_rx_buffer_cmd = SX126X_CMD_GET_RX_BUFFER_STATUS;
 const uint8_t set_lora_symb_timeout_cmd = SX126X_CMD_SET_LORA_SYMB_NUM_TIMEOUT;
 const uint8_t calibrate_image_cmd = SX126X_CMD_CALIBRATE_IMAGE;
 
-// extern short xbee_joint_debug_msgs;  // controls if debug messages are
+// extern short debug_msg_en;  // controls if debug messages are
 // printed
 
 void DRF1262::radio_init() {
@@ -188,7 +190,7 @@ void DRF1262::radio_spi_init() {
 
 void DRF1262::set_radio_packet_type_lora() {
 #if INCLUDE_DEBUG
-    if (xbee_joint_debug_msgs) {
+    if (debug_msg_en) {
         printf("Setting Packet Type to LoRa\n");
     }
 #endif
@@ -206,7 +208,7 @@ void DRF1262::set_radio_pa_config() {
     const uint8_t pa_lut = 0x01;
 
 #if INCLUDE_DEBUG
-    if (xbee_joint_debug_msgs) {
+    if (debug_msg_en) {
         printf("Setting PA Config\n");
     }
 #endif
@@ -276,7 +278,7 @@ short DRF1262::write_radio_buffer(uint8_t offset, uint8_t *data,
 }
 
 void DRF1262::set_radio_lora_modulation_param() {
-    const uint8_t spreading_factor = 0x07;
+    const uint8_t spreading_factor = 0x0C;
     const uint8_t bandwidth = 0x04;
     const uint8_t coding_rate = 0x04;
     const uint8_t low_data_rate = 0x00;
@@ -342,7 +344,7 @@ void DRF1262::set_dio2_rf_switch() {
     const uint8_t enable = 1;
 
 #if INCLUDE_DEBUG
-    if (xbee_joint_debug_msgs) {
+    if (debug_msg_en) {
         printf("Setting DIO2 as RF Switch\n");
     }
 #endif
@@ -362,7 +364,7 @@ void DRF1262::set_radio_sync_word() {
     const uint8_t data1 = 0x44;
 
 #if INCLUDE_DEBUG
-    if (xbee_joint_debug_msgs) {
+    if (debug_msg_en) {
         printf("Setting Radio Sync Word\n");
     }
 #endif
@@ -386,7 +388,7 @@ void DRF1262::set_radio_sync_word() {
 
 void DRF1262::set_tx_continuous_wave() {
 #if INCLUDE_DEBUG
-    if (xbee_joint_debug_msgs) {
+    if (debug_msg_en) {
         printf("Setting Mode TX Tone\n");
     }
 #endif
@@ -402,7 +404,7 @@ void DRF1262::set_tx() {
     const uint8_t timeout1 = 0x00;
 
 #if INCLUDE_DEBUG
-    if (xbee_joint_debug_msgs) {
+    if (debug_msg_en) {
         printf("Setting Mode TX\n");
     }
 #endif
@@ -422,7 +424,7 @@ void DRF1262::set_dio3_as_tcxo() {
     const uint8_t timeout1 = 0x80;
 
 #if INCLUDE_DEBUG
-    if (xbee_joint_debug_msgs) {
+    if (debug_msg_en) {
         printf("Setting DIO3 as TCXO CTRL\n");
     }
 #endif
@@ -442,7 +444,7 @@ void DRF1262::set_dio3_as_tcxo() {
 void DRF1262::set_regulator_mode() {
     const uint8_t mode = 0x01;
 #if INCLUDE_DEBUG
-    if (xbee_joint_debug_msgs) {
+    if (debug_msg_en) {
         printf("Setting Regulator Mode to DC DC\n");
     }
 #endif
@@ -455,7 +457,7 @@ void DRF1262::set_regulator_mode() {
 
 void DRF1262::clear_radio_errors() {
 #if INCLUDE_DEBUG
-    if (xbee_joint_debug_msgs) {
+    if (debug_msg_en) {
         printf("Clearing radio errors\n");
     }
 #endif
@@ -478,7 +480,7 @@ void DRF1262::radio_receive_cont() {
     uint8_t timeout1 = 0xFF;
 
 #if INCLUDE_DEBUG
-    if (xbee_joint_debug_msgs) {
+    if (debug_msg_en) {
         printf("Entering Radio Receive Mode (Continuous)\n");
     }
 #endif
@@ -497,7 +499,7 @@ void DRF1262::radio_receive_single() {
     uint8_t timeout1 = 0x00;
 
 #if INCLUDE_DEBUG
-    if (xbee_joint_debug_msgs) {
+    if (debug_msg_en) {
         printf("Entering Radio Receive Mode (Single)\n");
     }
 #endif
@@ -515,7 +517,7 @@ void DRF1262::set_dio_irq() {
     uint8_t irq_mask1 = 0xFF;
 
     uint8_t dio1_mask2 = 0x00;
-    uint8_t dio1_mask1 = 0x16;
+    uint8_t dio1_mask1 = 0x02;
     uint8_t dio2_mask2 = 0x00;
     uint8_t dio2_mask1 = 0x00;
     uint8_t dio3_mask2 = 0x00;
@@ -540,7 +542,7 @@ void DRF1262::clear_irq_status() {
     uint8_t irq_mask1 = 0xFF;
 
 #if INCLUDE_DEBUG
-    if (xbee_joint_debug_msgs) {
+    if (debug_msg_en) {
         printf("Clearing IRQ\n");
     }
 #endif
@@ -569,7 +571,7 @@ short DRF1262::read_radio_buffer(uint8_t *data, short num_bytes) {
     gpio_put(cs_pin, 1);
 
 #if INCLUDE_DEBUG
-    if (xbee_joint_debug_msgs) {
+    if (debug_msg_en) {
         printf("Received data:");
 
         for (short i = 0; i < num_bytes; i++) {
@@ -588,7 +590,7 @@ void DRF1262::get_irq_status() {
     uint8_t status1 = 0x00;
 
 #if INCLUDE_DEBUG
-    if (xbee_joint_debug_msgs) {
+    if (debug_msg_en) {
         printf("Getting IRQ Status\n");
     }
 #endif
@@ -605,7 +607,7 @@ void DRF1262::get_irq_status() {
 
 void DRF1262::get_rx_buffer_status() {
 #if INCLUDE_DEBUG
-    if (xbee_joint_debug_msgs) {
+    if (debug_msg_en) {
         printf("Getting RX Buffer Status\n");
     }
 #endif
@@ -618,7 +620,7 @@ void DRF1262::get_rx_buffer_status() {
     gpio_put(cs_pin, 1);
 
 #if INCLUDE_DEBUG
-    if (xbee_joint_debug_msgs) {
+    if (debug_msg_en) {
         printf("Payload Length %x\n", length);
         printf("Buffer Pointer %x\n", rx_buffer_start);
     }
@@ -643,7 +645,7 @@ void DRF1262::calibrate_image() {
 
 void DRF1262::set_radio_packet_type_fsk() {
 #if INCLUDE_DEBUG
-    if (xbee_joint_debug_msgs) {
+    if (debug_msg_en) {
         printf("Setting Packet Type to FSK\n");
     }
 #endif

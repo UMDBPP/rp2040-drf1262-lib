@@ -460,6 +460,7 @@ class DRF1262 {
     uint sw_pin;
     uint8_t tx_buffer = 0x00;
     uint8_t rx_buffer = 0x7F;
+    uint8_t debug_msg_en = 0;
 
     DRF1262(spi_inst_t *spi_p, const uint cs, const uint sck, const uint mosi,
             const uint miso, const uint txen, const uint dio1, const uint busy,
