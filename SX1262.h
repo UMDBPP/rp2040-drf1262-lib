@@ -461,7 +461,12 @@ class DRF1262 {
     uint8_t tx_buffer = 0x00;
     uint8_t rx_buffer = 0x7F;
     uint8_t debug_msg_en = 0;
+    uint8_t status = 0x00;
 
+    /**
+     * Sets radio configuration parameters, radio_init() must be called before
+     * use.
+     */
     DRF1262(spi_inst_t *spi_p, const uint cs, const uint sck, const uint mosi,
             const uint miso, const uint txen, const uint dio1, const uint busy,
             const uint sw) {
@@ -476,7 +481,16 @@ class DRF1262 {
         sw_pin = sw;
     }
 
+    /**
+     * Initializes the given radio SPI interface and sends various configuration
+     * parameters to the data per the datasheet.
+     */
     void radio_init(void);
+
+    /**
+     * Reads the radio status byte into the status variable and prints the
+     * status.
+     */
     void get_radio_status(void);
     void get_radio_errors(void);
     void set_radio_standby(void);
@@ -487,7 +501,15 @@ class DRF1262 {
     void set_tx_params(void);
     void set_radio_lora_modulation_param();
     void clear_radio_errors(void);
+
+    /**
+     * Writes the given data to the radio's buffer and sets the mode to TX
+     *
+     * @param data pointer to payload data buffer
+     * @param len length of buffer, should not exceed 255
+     */
     void radio_send(uint8_t *data, short len);
+
     void radio_receive_cont(void);
     void set_dio_irq(void);
 

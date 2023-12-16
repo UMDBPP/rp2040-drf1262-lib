@@ -107,9 +107,9 @@ void DRF1262::radio_init() {
 void DRF1262::get_radio_status() {
     gpio_put(cs_pin, 0);
     spi_write_blocking(spi, &get_status_cmd, 1);
-    spi_write_read_blocking(spi, &nop_cmd, &msg, 1);
+    spi_write_read_blocking(spi, &nop_cmd, &status, 1);
     gpio_put(cs_pin, 1);
-    printf("radio status: %x\n", msg);
+    printf("radio status: %x\n", status);
 }
 
 void DRF1262::set_radio_standby() {
