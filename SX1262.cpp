@@ -163,11 +163,11 @@ void DRF1262::radio_spi_init() {
 
     gpio_init(sw_pin);
     gpio_set_dir(sw_pin, GPIO_OUT);
-    gpio_put(sw_pin, 1);
+    gpio_put(sw_pin, 1);  // TODO, what should this be???
 
     gpio_init(txen_pin);
     gpio_set_dir(txen_pin, GPIO_OUT);
-    gpio_put(txen_pin, 0);
+    gpio_put(txen_pin, 1);
 
     gpio_init(busy_pin);
     gpio_set_dir(busy_pin, GPIO_IN);
@@ -469,9 +469,13 @@ void DRF1262::clear_radio_errors() {
     gpio_put(cs_pin, 1);
 }
 
+// smarter way of figuring out when transmit has ended with interrupts
 void DRF1262::radio_send(uint8_t *data, short len) {
+    gpio_put(txen_pin, 0);
     uint8_t payload = write_radio_buffer(tx_buffer, data, len);
     set_tx();
+    sleep_ms(5000);
+    gpio_put(txen_pin, 1);
 }
 
 void DRF1262::radio_receive_cont() {
