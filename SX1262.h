@@ -447,6 +447,11 @@
 #define SX126x_TXMODE_SYNC 0x02
 #define SX126x_TXMODE_BACK2RX 0x04
 
+typedef struct Radio_IRQ {
+    bool RX_DONE;
+    bool TX_DONE;
+} radio_irq;
+
 class DRF1262 {
    public:
     spi_inst_t *spi = spi0;
@@ -462,6 +467,7 @@ class DRF1262 {
     uint8_t rx_buffer = 0x7F;
     uint8_t debug_msg_en = 0;
     uint8_t status = 0x00;
+    radio_irq irqs;
 
     /**
      * Sets radio configuration parameters, radio_init() must be called before
@@ -479,6 +485,7 @@ class DRF1262 {
         dio1_pin = dio1;
         busy_pin = busy;
         sw_pin = sw;
+        irqs = {false, false};
     }
 
     /**
@@ -495,11 +502,7 @@ class DRF1262 {
     void get_radio_errors(void);
     void set_radio_standby(void);
     void read_radio_registers(void);
-    void set_radio_packet_type_lora(void);
-    void set_radio_pa_config(void);
-    void set_radio_rf_freq(void);
-    void set_tx_params(void);
-    void set_radio_lora_modulation_param();
+
     void clear_radio_errors(void);
 
     /**
@@ -511,7 +514,6 @@ class DRF1262 {
     void radio_send(uint8_t *data, short len);
 
     void radio_receive_cont(void);
-    void set_dio_irq(void);
 
     /**
      * Reads payload data from the SX1262's buffer
@@ -527,17 +529,18 @@ class DRF1262 {
     void get_irq_status(void);
     void get_rx_buffer_status(void);
     void radio_receive_single(void);
-    void set_radio_packet_type_fsk(void);
-    void set_radio_fsk_modulation_param(void);
-    void set_lora_symb_timeout(void);
-    void calibrate_image(void);
-    void set_radio_sync_word(void);
     void set_tx_continuous_wave(void);
+    void disable_tx(void);
 
    private:
     uint8_t length = 0x00;
     uint8_t rx_buffer_start = 0x00;
 
+    void set_radio_packet_type_fsk(void);
+    void set_radio_fsk_modulation_param(void);
+    void set_lora_symb_timeout(void);
+    void calibrate_image(void);
+    void set_radio_sync_word(void);
     void radio_spi_init();
     void set_buffer_base_address();
     void set_dio2_rf_switch(void);
@@ -546,13 +549,19 @@ class DRF1262 {
     void set_lora_packet_parameters(void);
     void set_dio3_as_tcxo(void);
     void set_regulator_mode(void);
+    void set_dio_irq(void);
+    void set_radio_packet_type_lora(void);
+    void set_radio_pa_config(void);
+    void set_radio_rf_freq(void);
+    void set_tx_params(void);
+    void set_radio_lora_modulation_param();
 
     /**
      * Writes payload data to the SX1262's buffer
      *
      * @param offset address to start writing data at
      * @param data pointer to payload data buffer
-     * @param num_bytes length of buffer, should not exceed 255
+     * @param num_bytes leradio_IRQngth of buffer, should not exceed 255
      *
      * @return -1 if buffer length is too large
      */

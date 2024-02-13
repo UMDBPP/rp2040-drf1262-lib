@@ -5,6 +5,7 @@
 #include <stdlib.h>
 
 #include "hardware/gpio.h"
+#include "hardware/irq.h"
 #include "hardware/spi.h"
 #include "pico/stdlib.h"
 
@@ -171,9 +172,6 @@ void DRF1262::radio_spi_init() {
 
     gpio_init(busy_pin);
     gpio_set_dir(busy_pin, GPIO_IN);
-
-    gpio_init(dio1_pin);
-    gpio_set_dir(dio1_pin, GPIO_IN);
 
     spi_init(spi, 500000);
 
@@ -474,9 +472,9 @@ void DRF1262::radio_send(uint8_t *data, short len) {
     gpio_put(txen_pin, 0);
     uint8_t payload = write_radio_buffer(tx_buffer, data, len);
     set_tx();
-    sleep_ms(5000);
-    gpio_put(txen_pin, 1);
 }
+
+void DRF1262::disable_tx(void) { gpio_put(txen_pin, 1); }
 
 void DRF1262::radio_receive_cont() {
     uint8_t timeout3 = 0xFF;
@@ -527,6 +525,11 @@ void DRF1262::set_dio_irq() {
     uint8_t dio3_mask2 = 0x00;
     uint8_t dio3_mask1 = 0x00;
 
+    gpio_init(dio1_pin);
+    // gpio_set_dir(dio1_pin, GPIO_IN);
+
+    gpio_set_irq_enabled(dio1_pin, GPIO_IRQ_EDGE_RISE, true);
+
     printf("Setting DIO1 IRQ\n");
     gpio_put(cs_pin, 0);
     spi_write_blocking(spi, &set_radio_dio_irq_cmd, 1);
@@ -556,6 +559,9 @@ void DRF1262::clear_irq_status() {
     spi_write_blocking(spi, &irq_mask2, 1);
     spi_write_blocking(spi, &irq_mask1, 1);
     gpio_put(cs_pin, 1);
+
+    irqs.RX_DONE = false;
+    irqs.TX_DONE = false;
 }
 
 short DRF1262::read_radio_buffer(uint8_t *data, short num_bytes) {
@@ -607,6 +613,10 @@ void DRF1262::get_irq_status() {
     gpio_put(cs_pin, 1);
 
     printf("IRQ Status Register %x %x\n", status2, status1);
+
+    if (status1 && 0x01) irqs.TX_DONE = true;
+
+    if (status1 && 0x02) irqs.RX_DONE = true;
 }
 
 void DRF1262::get_rx_buffer_status() {
