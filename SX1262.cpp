@@ -5,7 +5,7 @@
 #include <stdlib.h>
 
 #include "hardware/gpio.h"
-#include "hardware/irq.h"
+// #include "hardware/irq.h"
 #include "hardware/spi.h"
 #include "pico/stdlib.h"
 
@@ -601,7 +601,7 @@ void DRF1262::get_irq_status() {
 
 #if INCLUDE_DEBUG
     if (debug_msg_en) {
-        printf("Getting IRQ Status\n");
+        // printf("Getting IRQ Status\n");
     }
 #endif
 
@@ -612,7 +612,7 @@ void DRF1262::get_irq_status() {
     spi_write_read_blocking(spi, &nop_cmd, &status1, 1);
     gpio_put(cs_pin, 1);
 
-    printf("IRQ Status Register %x %x\n", status2, status1);
+    // printf("IRQ Status Register %x %x\n", status2, status1);
 
     if (status1 && 0x01) irqs.TX_DONE = true;
 
