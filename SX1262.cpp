@@ -168,7 +168,7 @@ void DRF1262::radio_spi_init() {
 
     gpio_init(txen_pin);
     gpio_set_dir(txen_pin, GPIO_OUT);
-    gpio_put(txen_pin, 1);
+    gpio_put(txen_pin, 0);  // gpio_put(txen_pin, 1);
 
     gpio_init(busy_pin);
     gpio_set_dir(busy_pin, GPIO_IN);
@@ -263,7 +263,7 @@ void DRF1262::set_buffer_base_address() {
 }
 
 short DRF1262::write_radio_buffer(uint8_t offset, uint8_t *data,
-                                  short num_bytes) {
+                                  size_t num_bytes) {
     if (num_bytes > 255) return -1;
 
     gpio_put(cs_pin, 0);
@@ -294,7 +294,7 @@ void DRF1262::set_lora_packet_parameters() {
     const uint8_t preamble2 = 0x00;
     const uint8_t preamble1 = 0x0F;
     const uint8_t header = 0x00;
-    const uint8_t length = 0x05;
+    const uint8_t length = 0x64;
     const uint8_t crc = 0x01;
     const uint8_t iq = 0x00;
 
@@ -468,7 +468,7 @@ void DRF1262::clear_radio_errors() {
 }
 
 // smarter way of figuring out when transmit has ended with interrupts
-void DRF1262::radio_send(uint8_t *data, short len) {
+void DRF1262::radio_send(uint8_t *data, size_t len) {
     gpio_put(txen_pin, 0);
     uint8_t payload = write_radio_buffer(tx_buffer, data, len);
     set_tx();
@@ -564,7 +564,7 @@ void DRF1262::clear_irq_status() {
     irqs.TX_DONE = false;
 }
 
-short DRF1262::read_radio_buffer(uint8_t *data, short num_bytes) {
+short DRF1262::read_radio_buffer(uint8_t *data, size_t num_bytes) {
     get_rx_buffer_status();
 
     if (num_bytes > 255 || num_bytes < length) return -1;

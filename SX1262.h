@@ -511,7 +511,7 @@ class DRF1262 {
      * @param data pointer to payload data buffer
      * @param len length of buffer, should not exceed 255
      */
-    void radio_send(uint8_t *data, short len);
+    void radio_send(uint8_t *data, size_t len);
 
     void radio_receive_cont(void);
 
@@ -523,7 +523,7 @@ class DRF1262 {
      *
      * @return -1 if buffer length is too large
      */
-    short read_radio_buffer(uint8_t *data, short num_bytes);
+    short read_radio_buffer(uint8_t *data, size_t num_bytes);
 
     void clear_irq_status(void);
     void get_irq_status(void);
@@ -565,7 +565,7 @@ class DRF1262 {
      *
      * @return -1 if buffer length is too large
      */
-    short write_radio_buffer(uint8_t offset, uint8_t *data, short num_bytes);
+    short write_radio_buffer(uint8_t offset, uint8_t *data, size_t num_bytes);
 };
 
 #endif
