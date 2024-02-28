@@ -3,11 +3,13 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "hardware/gpio.h"
 // #include "hardware/irq.h"
 #include "hardware/spi.h"
 #include "pico/stdlib.h"
+// #include "pico/mem_ops"
 
 // spi_inst_t *spi = spi0;
 
@@ -668,4 +670,28 @@ void DRF1262::set_radio_packet_type_fsk() {
     spi_write_blocking(spi, &set_packet_type_cmd, 1);
     spi_write_blocking(spi, &packet_type_fsk, 1);
     gpio_put(cs_pin, 1);
+}
+
+void DRF1262::get_packet_status() {
+    const uint8_t rssi_cmd = SX126X_CMD_GET_PACKET_STATUS;
+    uint8_t status = 0x00;
+    uint8_t rssi_pkt;
+    uint8_t snr_pkt;
+    uint8_t signal_rssi_pkt;
+
+    gpio_put(cs_pin, 0);
+    spi_write_blocking(spi, &rssi_cmd, 1);
+    spi_write_read_blocking(spi, &nop_cmd, &status, 1);
+    spi_write_read_blocking(spi, &nop_cmd, &rssi_pkt, 1);
+    spi_write_read_blocking(spi, &nop_cmd, &snr_pkt, 1);
+    spi_write_read_blocking(spi, &nop_cmd, &signal_rssi_pkt, 1);
+    gpio_put(cs_pin, 1);
+
+    memcpy(&(pkt_stat.rssi_pkt), &rssi_pkt, 1);
+    memcpy(&(pkt_stat.snr_pkt), &snr_pkt, 1);
+    memcpy(&(pkt_stat.signal_rssi_pkt), &signal_rssi_pkt, 1);
+
+    pkt_stat.rssi_pkt = -pkt_stat.rssi_pkt / 2;
+    pkt_stat.snr_pkt = pkt_stat.snr_pkt / 4;
+    pkt_stat.signal_rssi_pkt = -pkt_stat.signal_rssi_pkt / 2;
 }

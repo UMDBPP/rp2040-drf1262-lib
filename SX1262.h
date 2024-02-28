@@ -447,10 +447,16 @@
 #define SX126x_TXMODE_SYNC 0x02
 #define SX126x_TXMODE_BACK2RX 0x04
 
-typedef struct Radio_IRQ {
+typedef struct _radio_irq {
     bool RX_DONE;
     bool TX_DONE;
 } radio_irq;
+
+typedef struct _radio_pkt_status {
+    int rssi_pkt;
+    int snr_pkt;
+    int signal_rssi_pkt;
+} radio_pkt_status;
 
 class DRF1262 {
    public:
@@ -468,6 +474,7 @@ class DRF1262 {
     uint8_t debug_msg_en = 0;
     uint8_t status = 0x00;
     radio_irq irqs;
+    radio_pkt_status pkt_stat;
 
     /**
      * Sets radio configuration parameters, radio_init() must be called before
@@ -531,6 +538,7 @@ class DRF1262 {
     void radio_receive_single(void);
     void set_tx_continuous_wave(void);
     void disable_tx(void);
+    void get_packet_status(void);
 
    private:
     uint8_t length = 0x00;
