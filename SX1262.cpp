@@ -521,7 +521,7 @@ void DRF1262::set_dio_irq() {
     uint8_t irq_mask1 = 0xFF;
 
     uint8_t dio1_mask2 = 0x00;
-    uint8_t dio1_mask1 = 0x02;
+    uint8_t dio1_mask1 = 0x03;
     uint8_t dio2_mask2 = 0x00;
     uint8_t dio2_mask1 = 0x00;
     uint8_t dio3_mask2 = 0x00;
@@ -569,7 +569,7 @@ void DRF1262::clear_irq_status() {
 short DRF1262::read_radio_buffer(uint8_t *data, size_t num_bytes) {
     get_rx_buffer_status();
 
-    if (num_bytes > 255 || num_bytes < length) return -1;
+    if (num_bytes > 255 || num_bytes < rx_payload_length) return -1;
 
     printf("Reading Radio Buffer\n");
     gpio_put(cs_pin, 0);
@@ -631,13 +631,13 @@ void DRF1262::get_rx_buffer_status() {
     gpio_put(cs_pin, 0);
     spi_write_blocking(spi, &get_rx_buffer_cmd, 1);
     spi_write_blocking(spi, &nop_cmd, 1);
-    spi_write_read_blocking(spi, &nop_cmd, &length, 1);
+    spi_write_read_blocking(spi, &nop_cmd, &rx_payload_length, 1);
     spi_write_read_blocking(spi, &nop_cmd, &rx_buffer_start, 1);
     gpio_put(cs_pin, 1);
 
 #if INCLUDE_DEBUG
     if (debug_msg_en) {
-        printf("Payload Length %x\n", length);
+        printf("Payload Length %x\n", rx_payload_length);
         printf("Buffer Pointer %x\n", rx_buffer_start);
     }
 #endif
@@ -695,3 +695,5 @@ void DRF1262::get_packet_status() {
     pkt_stat.snr_pkt = pkt_stat.snr_pkt / 4;
     pkt_stat.signal_rssi_pkt = -pkt_stat.signal_rssi_pkt / 2;
 }
+
+void print_radio_state() {}

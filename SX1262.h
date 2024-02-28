@@ -539,9 +539,10 @@ class DRF1262 {
     void set_tx_continuous_wave(void);
     void disable_tx(void);
     void get_packet_status(void);
+    void print_radio_state(void);
 
    private:
-    uint8_t length = 0x00;
+    uint8_t rx_payload_length = 0x00;
     uint8_t rx_buffer_start = 0x00;
 
     void set_radio_packet_type_fsk(void);
