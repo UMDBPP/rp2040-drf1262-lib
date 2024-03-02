@@ -278,10 +278,10 @@ short DRF1262::write_radio_buffer(uint8_t offset, uint8_t *data,
 }
 
 void DRF1262::set_radio_lora_modulation_param() {
-    const uint8_t spreading_factor = 0x0C;
-    const uint8_t bandwidth = 0x04;
+    const uint8_t spreading_factor = 0x0B;
+    const uint8_t bandwidth = 0x03;
     const uint8_t coding_rate = 0x04;
-    const uint8_t low_data_rate = 0x00;
+    const uint8_t low_data_rate = 0x01;
 
     gpio_put(cs_pin, 0);
     spi_write_blocking(spi, &set_modulation_param_cmd, 1);
@@ -562,8 +562,8 @@ void DRF1262::clear_irq_status() {
     spi_write_blocking(spi, &irq_mask1, 1);
     gpio_put(cs_pin, 1);
 
-    irqs.RX_DONE = false;
-    irqs.TX_DONE = false;
+    // irqs.RX_DONE = false;
+    // irqs.TX_DONE = false;
 }
 
 short DRF1262::read_radio_buffer(uint8_t *data, size_t num_bytes) {
@@ -616,9 +616,9 @@ void DRF1262::get_irq_status() {
 
     // printf("IRQ Status Register %x %x\n", status2, status1);
 
-    if (status1 && 0x01) irqs.TX_DONE = true;
+    if (status1 & 0x01) irqs.TX_DONE = true;
 
-    if (status1 && 0x02) irqs.RX_DONE = true;
+    if (status1 & 0x02) irqs.RX_DONE = true;
 }
 
 void DRF1262::get_rx_buffer_status() {
@@ -687,13 +687,16 @@ void DRF1262::get_packet_status() {
     spi_write_read_blocking(spi, &nop_cmd, &signal_rssi_pkt, 1);
     gpio_put(cs_pin, 1);
 
-    memcpy(&(pkt_stat.rssi_pkt), &rssi_pkt, 1);
+    // memcpy(&(pkt_stat.rssi_pkt), &rssi_pkt, 1);
     memcpy(&(pkt_stat.snr_pkt), &snr_pkt, 1);
-    memcpy(&(pkt_stat.signal_rssi_pkt), &signal_rssi_pkt, 1);
+    // memcpy(&(pkt_stat.signal_rssi_pkt), &signal_rssi_pkt, 1);
 
-    pkt_stat.rssi_pkt = -pkt_stat.rssi_pkt / 2;
+    pkt_stat.rssi_pkt = (-rssi_pkt / 2);
     pkt_stat.snr_pkt = pkt_stat.snr_pkt / 4;
-    pkt_stat.signal_rssi_pkt = -pkt_stat.signal_rssi_pkt / 2;
+    pkt_stat.signal_rssi_pkt = (-signal_rssi_pkt / 2);
+
+    // printf("RSSI: 0x%x %d %d\n", rssi_pkt, (-rssi_pkt / 2), pkt_stat.rssi_pkt);
+    // printf("SNR: 0x%x %d\n", snr_pkt, pkt_stat.snr_pkt);
 }
 
 void print_radio_state() {}
