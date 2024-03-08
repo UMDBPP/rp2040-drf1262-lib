@@ -56,6 +56,12 @@ const uint8_t calibrate_image_cmd = SX126X_CMD_CALIBRATE_IMAGE;
 void DRF1262::radio_init() {
     printf("Initializing Radio\n");
 
+    if (rst_pin > 29) {
+        gpio_init(rst_pin);
+        gpio_set_dir(rst_pin, GPIO_OUT);
+        gpio_put(rst_pin, 1);
+    }
+
     radio_spi_init();
 
     // Step 1: Enter STDBY_RC
@@ -695,8 +701,8 @@ void DRF1262::get_packet_status() {
     pkt_stat.snr_pkt = pkt_stat.snr_pkt / 4;
     pkt_stat.signal_rssi_pkt = (-signal_rssi_pkt / 2);
 
-    // printf("RSSI: 0x%x %d %d\n", rssi_pkt, (-rssi_pkt / 2), pkt_stat.rssi_pkt);
-    // printf("SNR: 0x%x %d\n", snr_pkt, pkt_stat.snr_pkt);
+    // printf("RSSI: 0x%x %d %d\n", rssi_pkt, (-rssi_pkt / 2),
+    // pkt_stat.rssi_pkt); printf("SNR: 0x%x %d\n", snr_pkt, pkt_stat.snr_pkt);
 }
 
 void print_radio_state() {}

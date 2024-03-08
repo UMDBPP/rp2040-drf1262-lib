@@ -469,6 +469,7 @@ class DRF1262 {
     uint dio1_pin;
     uint busy_pin;
     uint sw_pin;
+    uint rst_pin;
     uint8_t tx_buffer = 0x00;
     uint8_t rx_buffer = 0x7F;
     uint8_t debug_msg_en = 0;
@@ -482,7 +483,7 @@ class DRF1262 {
      */
     DRF1262(spi_inst_t *spi_p, const uint cs, const uint sck, const uint mosi,
             const uint miso, const uint txen, const uint dio1, const uint busy,
-            const uint sw) {
+            const uint sw, const uint rst) {
         spi = spi_p;
         cs_pin = cs;
         sck_pin = sck;
@@ -492,6 +493,7 @@ class DRF1262 {
         dio1_pin = dio1;
         busy_pin = busy;
         sw_pin = sw;
+        rst_pin = rst;
         irqs = {false, false};
     }
 
