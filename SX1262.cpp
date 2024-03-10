@@ -56,11 +56,11 @@ const uint8_t calibrate_image_cmd = SX126X_CMD_CALIBRATE_IMAGE;
 void DRF1262::radio_init() {
     printf("Initializing Radio\n");
 
-    if (rst_pin > 29) {
-        gpio_init(rst_pin);
-        gpio_set_dir(rst_pin, GPIO_OUT);
-        gpio_put(rst_pin, 1);
-    }
+    // if (rst_pin <= 29) {
+    //     gpio_init(rst_pin);
+    //     gpio_set_dir(rst_pin, GPIO_OUT);
+    //     gpio_put(rst_pin, 1);
+    // }
 
     radio_spi_init();
 
@@ -230,7 +230,6 @@ void DRF1262::set_radio_pa_config() {
 
 void DRF1262::set_radio_rf_freq() {
     const uint32_t frequency = 915000000;
-
     uint8_t buf[4];
     uint32_t freq = 0;
 
@@ -252,7 +251,7 @@ void DRF1262::set_radio_rf_freq() {
 }
 
 void DRF1262::set_tx_params() {
-    const uint8_t power = 0x00;
+    const uint8_t power = 0x00;                     // 0xF7 -> 0x16, -9 -> 22
     const uint8_t ramp_time = SX126X_PA_RAMP_200U;  // 200us ramp time
 
     gpio_put(cs_pin, 0);
