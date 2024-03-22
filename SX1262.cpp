@@ -622,9 +622,10 @@ void DRF1262::get_irq_status() {
 
     // printf("IRQ Status Register %x %x\n", status2, status1);
 
-    if (status1 & 0x01) irqs.TX_DONE = true;
-
-    if (status1 & 0x02) irqs.RX_DONE = true;
+    if (status1 & SX126X_IRQ_TX_DONE) irqs.tx_done = true;
+    if (status1 & SX126X_IRQ_RX_DONE) irqs.rx_done = true;
+    if (status1 & SX126X_IRQ_CAD_DONE) irqs.cad_done = true;
+    if (status1 & SX126X_IRQ_CAD_DETECTED) irqs.cad_det = true;
 }
 
 void DRF1262::get_rx_buffer_status() {

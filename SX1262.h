@@ -448,8 +448,10 @@
 #define SX126x_TXMODE_BACK2RX 0x04
 
 typedef struct _radio_irq {
-    bool RX_DONE;
-    bool TX_DONE;
+    bool tx_done;
+    bool rx_done;
+    bool cad_done;
+    bool cad_det;
 } radio_irq;
 
 typedef struct _radio_pkt_status {
