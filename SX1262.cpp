@@ -526,7 +526,8 @@ void DRF1262::set_dio_irq() {
     uint8_t irq_mask1 = 0xFF;
 
     uint8_t dio1_mask2 = 0x00;
-    uint8_t dio1_mask1 = 0x03;
+    uint8_t dio1_mask1 = 0xC3;
+
     uint8_t dio2_mask2 = 0x00;
     uint8_t dio2_mask1 = 0x00;
     uint8_t dio3_mask2 = 0x00;
