@@ -542,6 +542,8 @@ class DRF1262 {
     void disable_tx(void);
     void get_packet_status(void);
     void print_radio_state(void);
+    void set_cad(void);
+    void set_cad_params(void);
 
    private:
     uint8_t rx_payload_length = 0x00;

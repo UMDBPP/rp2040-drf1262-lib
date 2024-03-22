@@ -704,4 +704,34 @@ void DRF1262::get_packet_status() {
     // pkt_stat.rssi_pkt); printf("SNR: 0x%x %d\n", snr_pkt, pkt_stat.snr_pkt);
 }
 
-void print_radio_state() {}
+// void DRF1262::print_radio_state() {}
+
+void DRF1262::set_cad() {
+    const uint8_t cmd = SX126X_CMD_SET_CAD;
+
+    gpio_put(cs_pin, 0);
+    spi_write_blocking(spi, &cmd, 1);
+    gpio_put(cs_pin, 1);
+}
+
+void DRF1262::set_cad_params() {
+    const uint8_t cmd = SX126X_CMD_SET_CAD_PARAMS;
+    const uint8_t cad_sym_num = SX126X_CAD_ON_4_SYMB;
+    const uint8_t cad_det_peak = 28;
+    const uint8_t cad_det_min = 10;
+    const uint8_t cad_exit_mode = SX126X_CAD_GOTO_RX;
+    const uint8_t timeout3 = 0x09;
+    const uint8_t timeout2 = 0xC4;
+    const uint8_t timeout1 = 0x00;
+
+    gpio_put(cs_pin, 0);
+    spi_write_blocking(spi, &cmd, 1);
+    spi_write_blocking(spi, &cad_sym_num, 1);
+    spi_write_blocking(spi, &cad_det_peak, 1);
+    spi_write_blocking(spi, &cad_det_min, 1);
+    spi_write_blocking(spi, &cad_exit_mode, 1);
+    spi_write_blocking(spi, &timeout3, 1);
+    spi_write_blocking(spi, &timeout2, 1);
+    spi_write_blocking(spi, &timeout1, 1);
+    gpio_put(cs_pin, 1);
+}
