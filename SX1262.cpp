@@ -110,6 +110,9 @@ void DRF1262::radio_init() {
 
   // TODO calibrate image
 
+  // Step ??: the rest of it
+
+  set_cad_params();
   read_radio_registers();
 }
 
@@ -472,7 +475,9 @@ void DRF1262::clear_radio_errors() {
   gpio_put(cs_pin, 1);
 }
 
-// smarter way of figuring out when transmit has ended with interrupts
+// Writes data to the radio and sets the mode to TX, user needs to determine
+// when transmission has ended before setting the mode back to receive and
+// disabling the transmission amplifier if used
 void DRF1262::radio_send(uint8_t *data, size_t len) {
   gpio_put(txen_pin, 0);
   uint8_t payload = write_radio_buffer(tx_buffer, data, len);

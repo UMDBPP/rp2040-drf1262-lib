@@ -500,7 +500,7 @@ public:
     busy_pin = busy;
     sw_pin = sw;
     rst_pin = rst;
-    irqs = {false, false};
+    irqs = {false, false, false, false};
   }
 
   /**
